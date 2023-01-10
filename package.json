@@ -1,0 +1,22 @@
+{
+  "name": "traincontroller",
+  "version": "1.0.0",
+  "description": "Train Controller App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisCockram/TrainController.git"
+  },
+  "author": "@ChrisCockram",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChrisCockram/TrainController/issues"
+  },
+  "homepage": "https://github.com/ChrisCockram/TrainController#readme",
+  "devDependencies": {
+    "electron": "^22.0.0"
+  }
+}

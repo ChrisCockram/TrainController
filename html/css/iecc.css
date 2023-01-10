@@ -1,0 +1,209 @@
+svg text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+svg text::selection {
+    background: none;
+}
+
+.test{
+    dominant-baseline: hanging;
+    font-family: "Gill Sans MT";
+    font-size: 3rem;
+    fill: #FFFFFF;
+}
+
+
+.station{
+    background-color:#FFD279;
+}
+
+.signal .stork, .signal .stem{
+    fill: #D9DAC4;
+}
+.signal .stork{
+    height: 20px;
+    width: 4px;
+    y:20;
+}
+.signal .stem{
+    height: 4px;
+    width: 20px;
+}
+.signal .head{
+    r:8;
+    stroke:#D9DAC4;
+    stroke-width:2;
+    cursor: pointer;
+}
+.signal .second-head{
+
+}
+.signal-top-right .stork{
+    y:20;
+}
+.signal-top-right .stem,.signal-bottom-right .stem{
+    y:18;
+}
+.signal-top-right .head,.signal-bottom-right .head{
+    cx:20;
+    cy:20;
+}
+.signal-top-right .second-head,.signal-bottom-right .second-head{
+    cy:20;
+    cx:36;
+}
+.signal-top-left .stork{
+    y:20;
+    x:52
+}
+.signal-top-left .stem,.signal-bottom-left .stem{
+    x:36;
+    y:18;
+}
+.signal-top-left .head, .signal-bottom-left .head{
+    cx:36;
+    cy:20;
+}
+.signal-top-left .second-head,.signal-bottom-left .second-head{
+    cx:20;
+    cy:20;
+}
+
+.signal-bottom-right .stork{
+    x:0;
+    y:0;
+}
+.signal-bottom-left .stork{
+    x:52;
+    y:0;
+}
+
+.gpl{
+    d:path('M 12 12 L 12 28 L 28 28 A 1 1 0 0 0 28 28 Q 28 12 12 12')
+}
+
+.red{
+    fill: #FF0000;
+}
+.yellow,.double-yellow{
+    fill: #EAAF17;
+}
+.double-yellow .second-head{
+    fill:#EAAF17;
+    r:8;
+    stroke:#D9DAC4;
+    stroke-width:2;
+}
+.green{
+    fill: #00FF00;
+}
+
+
+/*track*/
+.track{
+    fill: #939393;
+}
+.track-occupied{
+    fill:#F98462;
+}
+.track-route-set{
+    fill:#FEFEEB;
+}
+.track-left .left{
+    x:3;
+    y:40;
+    width: 12px;
+    height: 24px;
+}
+.track-right .right{
+    y:40;
+    x:calc(100% - 15px);
+    width: 12px;
+    height: 24px;
+}
+.track .main{
+    x:3;
+    height: 12px;
+    width: calc(100% - 6px);
+    y:46;
+}
+.berth{
+    width: 100%;
+}
+.berth rect{
+    y:42;
+    height: 24px;
+    width: 80px;
+    fill: black;
+    x:calc(50% - 40px);
+}
+.berth text{
+    font-family: monospace;
+    font-size: 32px;
+    fill:#BFF6E9;
+    text-transform: uppercase;
+    dominant-baseline: hanging;
+    text-anchor: middle;
+    transform: translateY(38px);
+}
+
+.points{
+}
+.points-top-left .deviation{
+    d:path('M 3 3 L 15 3 L 52 40 L 40 40 Z');
+}
+.points-top-left .route{
+    d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
+}
+.points-top-left-switched .deviation{
+    d:path('M 3 46 L 40 46 L 52 58 L 3 58 Z');
+}
+.points-top-left-switched .route{
+    d:path('M 3 3 L 15 3 L 58 46 L 97 46 L 97 58 L 58 58 Z');
+}
+
+.points-top-right .deviation{
+    d:path('M 85 3 L 97 3 L 64 40 L 52 40 Z');
+}
+.points-top-right .route{
+    d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
+}
+.points-top-right-switched .deviation{
+    d:path('M 60 46 L 97 46 L 97 58 L 48 58 Z');
+}
+.points-top-right-switched .route{
+    d:path('M 97 3 L 85 3 L 42 46 L 3 46 L 3 58 L 42 58 Z');
+}
+
+.points-bottom-left .deviation{
+    d:path('M 3 97 L 15 97 L 52 64 L 40 64 Z');
+}
+.points-bottom-left .route{
+    d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
+}
+.points-bottom-left-switched .deviation{
+    d:path('M 3 46 L 51 46 L 37 58 L 3 58 Z');
+}
+.points-bottom-left-switched .route{
+    d:path('M 15 97 L 3 97 L 57 46 L 97 46 L 97 58 L 57 58 Z');
+}
+
+.points-bottom-right .deviation{
+    d:path('M 85 97 L 97 97 L 66 64 L 54 64 Z');
+}
+.points-bottom-right .route{
+    d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
+}
+.points-bottom-right-switched .deviation{
+    d:path('M 60 46 L 97 46 L 97 58 L 72 58 Z');
+}
+.points-bottom-right-switched .route{
+    d:path('M 85 97 L 97 97 L 54 46 L 3 46 L 3 58 L 52 58 Z');
+}
+
+.points .deviation{
+    fill: #939393;
+}
