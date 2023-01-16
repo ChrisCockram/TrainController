@@ -1,3 +1,4 @@
+
 svg text {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -42,7 +43,6 @@ svg text::selection {
     r:8;
     stroke:#D9DAC4;
     stroke-width:2;
-    cursor: pointer;
 }
 .signal .second-head{
 }
@@ -214,6 +214,7 @@ svg text::selection {
     dominant-baseline: hanging;
     text-anchor: middle;
     transform: translateY(38px);
+    font-weight: bold;
 }
 
 .points{
@@ -279,7 +280,13 @@ svg text::selection {
 }
 
 @keyframes flash {
+    49% {
+        opacity: 1;
+    }
     50% {
+        opacity: 0.3;
+    }
+    99%{
         opacity: 0.3;
     }
 }

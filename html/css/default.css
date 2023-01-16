@@ -3,6 +3,7 @@ a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,c
 body{
     background-color: #000000;
     color:#FFFFFF;
+    cursor: crosshair;
 }
 .console{
     position: fixed;
@@ -42,32 +43,32 @@ body{
     display: none;
 }
 #headcodeInput{
-    transform: translateX(-50%);
+    transform: translate(-50%,18px);
 }
 #headcodeInput input{
     width: calc(100% - 10px);
     height: 40px;
     line-height: 40px;
-    font-size:40px;
-    text-transform: uppercase;
     border: #1d1d1d solid 1px;
     border-radius: 5px;
     text-align: center;
+    font-family: monospace;
+    font-size: 32px;
+    color:#BFF6E9;
+    text-transform: uppercase;
+    font-weight: bold;
+    background-color: #000000;
 }
 #headcodeInput button{
-    background-color: #4CAF50;
+    background-color: #BFF6E9;
     border: #1d1d1d solid 1px;
     border-radius: 5px;
     margin-top:10px ;
     width: calc(50% - 5px);
-    cursor: pointer;
-    color: white;
+    color: #000000;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-
-
-
-
+    font-weight: bold;
 }

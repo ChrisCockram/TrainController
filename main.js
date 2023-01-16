@@ -209,3 +209,8 @@ ipcMain.on('clickSignal',(event,id)=>{
         },10000)
     }
 })
+
+ipcMain.on('interpose',(event,message)=>{
+    let track= Railway.returnTrackById(message.trackId)
+    track.interpose(message.headcode)
+})

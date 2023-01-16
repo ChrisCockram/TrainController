@@ -252,22 +252,43 @@ function clickSignal(id){
     ipcRenderer.send('clickSignal',id);
 }
 
+let interposeTc=false
 function interposePopup(args){
     let modal = document.getElementById('headcodeInput')
+    interposeTc=args.trackId
     modal.style.left=args.x+'px'
     modal.style.top=args.y+'px'
     modal.style.display='block'
+    document.getElementById('headcodeInputValue').focus()
+}
+
+function interposeClose(){
+    document.getElementById('headcodeInputValue').value=""
+    let modal = document.getElementById('headcodeInput')
+    modal.style.display='none'
 }
 
 //TODO This interpose function is not working
 function interpose(){
-    let headcode = document.getElementById('headcodeInputValue').value()
-    alert(headcode);
-    return false
+    let headcode = document.getElementById('headcodeInputValue').value
+    ipcRenderer.send('interpose',{headcode,"trackId":interposeTc})
+    interposeClose()
 }
 
+
+document.getElementById('headcodeInputValue').addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault()
+        interpose()
+    }
+    if (event.key === "Escape") {
+        event.preventDefault()
+        interposeClose()
+    }
+});
+
+
 function updateLog(message){
-    console.log(message)
     let consoleLog = document.getElementById('consoleLog')
     let li = document.createElement('li')
     let p = document.createElement('p')

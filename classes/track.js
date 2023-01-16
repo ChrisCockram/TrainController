@@ -59,6 +59,13 @@ class Track{
         }
     }
 
+    interpose(headcode){
+        this.headcode=headcode
+        updateLog('Interpose headcode: '+headcode+' at track '+this.id)
+        this.updateTrack()
+    }
 }
+
+
 
 module.exports = Track;
