@@ -8,10 +8,16 @@ svg text::selection {
     background: none;
 }
 
-.test{
+.title{
     dominant-baseline: hanging;
     font-family: "Gill Sans MT";
     font-size: 3rem;
+    fill: #FFFFFF;
+}
+.subtitle{
+    dominant-baseline: hanging;
+    font-family: "Gill Sans MT";
+    font-size: 1rem;
     fill: #FFFFFF;
 }
 
@@ -39,7 +45,30 @@ svg text::selection {
     cursor: pointer;
 }
 .signal .second-head{
+}
 
+
+.signal-id{
+    opacity: 0;
+    font-family: monospace;
+    font-size: 12px;
+    fill:#D9DAC4;
+    text-transform: uppercase;
+    dominant-baseline: hanging;
+}
+.display-signal-ids .signal-id{
+    opacity: 1;
+}
+.signal-top-left text{
+    text-anchor: end;
+    transform: translateX(56px);
+}
+.signal-bottom-right text, .signal-bottom-left text{
+    transform: translateY(30px);
+}
+.signal-bottom-left text{
+    text-anchor: end;
+    transform: translate(56px,30px);
 }
 .signal-top-right .stork{
     y:20;
@@ -71,7 +100,6 @@ svg text::selection {
     cx:20;
     cy:20;
 }
-
 .signal-bottom-right .stork{
     x:0;
     y:0;
@@ -80,19 +108,38 @@ svg text::selection {
     x:52;
     y:0;
 }
-
-.gpl{
+.signal-top-right .gpl{
     d:path('M 12 12 L 12 28 L 28 28 A 1 1 0 0 0 28 28 Q 28 12 12 12')
 }
+.signal-top-left .gpl{
+    d:path('M 27 28 L 43 28 L 43 12 A 1 1 0 0 0 43 12 Q 27 12 27 28')
+}
+.signal-bottom-left .gpl{
+    d:path('M 43 28 L 43 12 L 27 12 A 1 1 0 0 0 27 12 Q 27 28 43 28')
+}
+.signal-bottom-right .gpl{
+    d:path('M 28 12 L 12 12 L 12 28 A 1 1 0 0 0 12 28 Q 28 28 28 12')
+}
+.reminder .reminder-appliance{
+    y:10;
+    width: 30px;
+    height: 30px;
+    fill: #00FFFF;
+}
+.signal-bottom-left .reminder-appliance{
+    y:0;
+    x:26
+}
+
 
 .red{
-    fill: #FF0000;
+    fill: #F98462;
 }
 .yellow,.double-yellow{
     fill: #EAAF17;
 }
 .double-yellow .second-head{
-    fill:#EAAF17;
+    fill: #EAAF17;
     r:8;
     stroke:#D9DAC4;
     stroke-width:2;
@@ -105,6 +152,19 @@ svg text::selection {
 /*track*/
 .track{
     fill: #939393;
+}
+.track-id{
+    opacity: 0;
+    font-family: monospace;
+    font-size: 12px;
+    fill: #D9DAC4;
+    text-transform: uppercase;
+    dominant-baseline: hanging;
+    text-anchor: middle;
+    y:60;
+}
+.display-track-ids .track-id{
+    opacity: 1;
 }
 .track-occupied{
     fill:#F98462;
@@ -130,8 +190,14 @@ svg text::selection {
     width: calc(100% - 6px);
     y:46;
 }
+
+
 .berth{
     width: 100%;
+    opacity: 0;
+}
+.display-berth .berth{
+    opacity: 1;
 }
 .berth rect{
     y:42;
@@ -158,10 +224,10 @@ svg text::selection {
 .points-top-left .route{
     d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
 }
-.points-top-left-switched .deviation{
+.points-top-left.switched .deviation{
     d:path('M 3 46 L 40 46 L 52 58 L 3 58 Z');
 }
-.points-top-left-switched .route{
+.points-top-left.switched .route{
     d:path('M 3 3 L 15 3 L 58 46 L 97 46 L 97 58 L 58 58 Z');
 }
 
@@ -171,10 +237,10 @@ svg text::selection {
 .points-top-right .route{
     d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
 }
-.points-top-right-switched .deviation{
+.points-top-right.switched .deviation{
     d:path('M 60 46 L 97 46 L 97 58 L 48 58 Z');
 }
-.points-top-right-switched .route{
+.points-top-right.switched .route{
     d:path('M 97 3 L 85 3 L 42 46 L 3 46 L 3 58 L 42 58 Z');
 }
 
@@ -184,10 +250,10 @@ svg text::selection {
 .points-bottom-left .route{
     d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
 }
-.points-bottom-left-switched .deviation{
+.points-bottom-left.switched .deviation{
     d:path('M 3 46 L 51 46 L 37 58 L 3 58 Z');
 }
-.points-bottom-left-switched .route{
+.points-bottom-left.switched .route{
     d:path('M 15 97 L 3 97 L 57 46 L 97 46 L 97 58 L 57 58 Z');
 }
 
@@ -197,13 +263,23 @@ svg text::selection {
 .points-bottom-right .route{
     d:path('M 3 46 L 97 46 L 97 58 L 3 58 Z');
 }
-.points-bottom-right-switched .deviation{
+.points-bottom-right.switched .deviation{
     d:path('M 60 46 L 97 46 L 97 58 L 72 58 Z');
 }
-.points-bottom-right-switched .route{
+.points-bottom-right.switched .route{
     d:path('M 85 97 L 97 97 L 54 46 L 3 46 L 3 58 L 52 58 Z');
 }
 
-.points .deviation{
+.deviation{
     fill: #939393;
+}
+
+.flash {
+    animation: flash 0.5s linear infinite;
+}
+
+@keyframes flash {
+    50% {
+        opacity: 0.3;
+    }
 }

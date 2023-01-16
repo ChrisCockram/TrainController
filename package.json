@@ -18,5 +18,8 @@
   "homepage": "https://github.com/ChrisCockram/TrainController#readme",
   "devDependencies": {
     "electron": "^22.0.0"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0"
   }
 }

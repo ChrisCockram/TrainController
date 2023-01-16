@@ -6,141 +6,35 @@
     <link type="text/css" rel="stylesheet" href="css/default.css">
 </head>
 <body>
-    <svg width="200%" height="600px">
+    <svg id="display" class="display-track-ids display-signal-ids" width="200%" height="90vh">
         <style>
             @import url(css/iecc.css);
         </style>
         <desc>IECC Emulator</desc>
-        <text x="0" y="0" class="test">Train Controller</text>
+        <text x="0" y="0" class="title">Train Controller</text>
+        <text x="0" y="50" class="subtitle" id="subtitle"></text>
+
         <g id="layers">
-            <g id="signals">
-                <svg class="signal signal-top-right double-yellow" x="20" y="100">
-                    <rect class="stork"></rect>
-                    <rect class="stem"></rect>
-                    <circle class="head"></circle>
-                    <circle class="second-head"></circle>
-                </svg>
-
-                <svg class="signal signal-top-left" x="100" y="100">
-                    <rect class="stork"></rect>
-                    <rect class="stem"></rect>
-                    <circle class="head"></circle>
-                    <circle class="second-head"></circle>
-                </svg>
-
-                <svg class="signal signal-bottom-right" x="20" y="264">
-                    <rect class="stork"></rect>
-                    <rect class="stem"></rect>
-                    <circle class="head"></circle>
-                    <circle class="second-head"></circle>
-                </svg>
-
-                <svg class="signal signal-bottom-left red" x="100" y="264">
-                    <rect class="stork"></rect>
-                    <rect class="stem"></rect>
-                    <circle class="head"></circle>
-                    <circle class="second-head"></circle>
-                </svg>
-
-
-                <svg class="signal signal-top-right red" x="480" y="100">
-                    <rect class="stork"></rect>
-                    <rect class="stem"></rect>
-                    <path class="gpl head" d=""></path>
-                </svg>
-
-
-
+            <g id="display-signals">
             </g>
 
-            <g id="track">
-
-                <svg class="track track-left track-route-set" x="0" y="100" width="100px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-
-                <svg class="track track-occupied" x="100" y="100" width="200px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                    <g class="berth">
-                        <rect></rect>
-                        <text x="50%">1F12</text>
-                    </g>
-                </svg>
-                <svg class="track track-occupied" x="300" y="100" width="200px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-                <svg class="track track-right" x="600" y="100" width="100px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-
-                <svg class="track track-left" x="0" y="200" width="100px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-                <svg class="track" x="100" y="200" width="200px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-                <svg class="track" x="300" y="200" width="285px">
-                    <rect class="main"></rect>
-                    <rect class="left"></rect>
-                    <rect class="right"></rect>
-                </svg>
-                <svg class="track points points-top-left-switched" x="585" y="200">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-
-                <svg class="track points points-top-left" y="500">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-                <svg class="track points points-top-right" y="500" x="100">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-                <svg class="track points points-top-right-switched" y="500" x="200">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-                <svg class="track points points-bottom-left" y="500" x="300">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-                <svg class="track points points-bottom-left-switched" y="500" x="400">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-
-                <svg class="track points points-bottom-right" y="500" x="500">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
-                <svg class="track points points-bottom-right-switched" y="100" x="500">
-                    <path class="route"></path>
-                    <path class="deviation"></path>
-                </svg>
-
+            <g id="display-track">
             </g>
         </g>
     </svg>
 
+    <div id="headcodeInput" class="modal">
+        <form action="" onsubmit="interpose()" id="headcodeInputForm">
+            <input id="headcodeInputValue" maxlength="4" type="text">
+            <button type="submit">Set</button>
+            <button type="button">Cancel</button>
+        </form>
+    </div>
+
+    <div class="console">
+        <ul id="consoleLog">
+        </ul>
+    </div>
+    <script type="text/javascript" src="js/display-manager.js"></script>
 </body>
 </html>
