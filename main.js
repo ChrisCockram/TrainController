@@ -1,6 +1,5 @@
 const electron = require('electron')
 const { app, BrowserWindow, ipcMain, Menu} = electron
-//const Menu = electron.Menu
 const MenuItem = electron.MenuItem
 const rw = require('./classes/railway.js')
 let Railway = new rw()
@@ -13,8 +12,9 @@ global.updateLog = (message,type='default')=>{
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 1000,
-        height: 600,
+        width: 1500,
+        height: 800,
+        autoHideMenuBar: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
@@ -39,6 +39,7 @@ app.whenReady().then(() => {
         updateLog('Load Route')
 
         Railway.loadFile('routes/test-route.json')
+        Railway.ars.loadTimetable('timetables/test-timetable.json')
     })
 
 });
@@ -74,7 +75,8 @@ ipcMain.on('loadSignalContextMenu',(event,id)=>{
             new MenuItem({
                 label:'Cancel Route',
                 click: (menuItem, window, e) => {
-                    Railway.cancelRoute(sig.id);
+                    sig.cancelRoute()
+                    //Railway.cancelRoute(sig.id);
                 }
             })
         )
@@ -97,7 +99,7 @@ ipcMain.on('loadSignalContextMenu',(event,id)=>{
             new MenuItem({
                 label:route.targetSignalId,
                 click: (menuItem, window, e) => {
-                    Railway.setRoute(sig.id,route);
+                    sig.setRoute(route);
                 }
             })
         )
@@ -116,7 +118,7 @@ ipcMain.on('loadSignalContextMenu',(event,id)=>{
             label:'Interpose Headcode',
             click: (menuItem, window, e) => {
                 let berth=Railway.returnTrackById(sig.berth)
-                win.webContents.send('interposePopup',{'x':(berth.x+(berth.width/2)),'y':berth.y,'trackId':sig.berth})
+                win.webContents.send('interposePopup',{'x':(berth.x+(berth.width/2)),'y':berth.y,'trackId':sig.berth,'sigId':sig.id})
             }
         })
     )
@@ -169,9 +171,32 @@ ipcMain.on('loadTrackContextMenu',(event,id)=>{
 
     trackMenu.append(
         new MenuItem({
-            label:'Engineering Overlay'
+            label:'Engineering Overlay',
+            click: (menuItem, window, e) => {
+                track.toggleEngineeringOverlay()
+            },
         })
     )
+
+    if(track.occupied){
+        trackMenu.append(
+            new MenuItem({
+                label:'Clear Track Occupancy',
+                click: (menuItem, window, e) => {
+                    track.setTrackOccupancy(false)
+                },
+            })
+        )
+    }else{
+        trackMenu.append(
+            new MenuItem({
+                label:'Occupy Track',
+                click: (menuItem, window, e) => {
+                    track.setTrackOccupancy(true)
+                },
+            })
+        )
+    }
 
     trackMenu.popup(win)
 })
@@ -181,7 +206,7 @@ let routeSetActiveTimeout=false
 ipcMain.on('clickSignal',(event,id)=>{
     let sig = Railway.returnSignalById(id)
     if(routeSetActive){
-        clearTimeout(routeSetActiveTimeout);
+        clearTimeout(routeSetActiveTimeout)
         routeSetActive.routes.forEach((route)=>{
             Railway.clearFlashSignal(route.targetSignalId)
         })
@@ -189,9 +214,9 @@ ipcMain.on('clickSignal',(event,id)=>{
         //Is the route valid?
         let routeToSet = routeSetActive.returnRouteTo(sig.id);
         if(routeToSet!==undefined){
-            Railway.setRoute(routeSetActive.id,routeToSet)
+            routeSetActive.setRoute(routeToSet)
         }else{
-            console.log("No valid route between "+routeSetActive.id+" & "+sig.id)
+            updateLog("No valid route between "+routeSetActive.id+" & "+sig.id)
         }
 
         routeSetActive = false
@@ -210,7 +235,7 @@ ipcMain.on('clickSignal',(event,id)=>{
     }
 })
 
-ipcMain.on('interpose',(event,message)=>{
-    let track= Railway.returnTrackById(message.trackId)
-    track.interpose(message.headcode)
+ipcMain.on('interposeSig',(event,message)=>{
+    let signal= Railway.returnSignalById(message.sigId)
+    signal.interpose(message.headcode.toUpperCase())
 })

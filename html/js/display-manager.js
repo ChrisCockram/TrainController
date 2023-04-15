@@ -32,7 +32,11 @@ function draw(item){
             drawTrack(item)
             break
         case "signal":
-            drawSignal(item)
+            if(item.detail.exitMarker){
+                drawExitMarker(item)
+            }else{
+                drawSignal(item)
+            }
             break
     }
 }
@@ -45,6 +49,7 @@ function drawTrack(item){
     svg.setAttribute('x',item.detail.x)
     svg.setAttribute('y',item.detail.y)
     svg.setAttribute('width',item.detail.width)
+
     let main = document.createElementNS(svgNS,'rect')
     main.classList.add('main')
 
@@ -55,6 +60,10 @@ function drawTrack(item){
     let right = document.createElementNS(svgNS,'rect')
     right.classList.add('right')
     svg.appendChild(right)
+
+    let path = document.createElementNS(svgNS,'path')
+    path.classList.add('turn')
+    svg.appendChild(path)
 
     let tcid = document.createElementNS(svgNS,'text')
     tcid.textContent=item.detail.id;
@@ -70,6 +79,13 @@ function drawTrack(item){
 
     svg.id=item.detail.id
     svg.classList.add('track')
+    if(item.detail.trackType){
+        svg.classList.add(item.detail.trackType)
+        if(item.detail.trackType.includes("bottom")){
+            tcid.setAttribute("y","35")
+        }
+    }
+
 
     switch (item.detail.overlap){
         case "left":
@@ -77,6 +93,9 @@ function drawTrack(item){
             break
         case "right":
             svg.classList.add('track-right')
+            break
+        case "both":
+            svg.classList.add('track-both')
             break
     }
 
@@ -143,6 +162,7 @@ function drawSignal(item){
     svg.appendChild(name)
 
     if(item.detail.gpl){
+        svg.classList.add('gpl')
         svg.appendChild(gpl)
     }else{
         svg.appendChild(head)
@@ -185,6 +205,30 @@ function drawSignal(item){
 
 }
 
+function drawExitMarker(item){
+    let display = document.getElementById('display-signals')
+    let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    let svgNS = svg.namespaceURI;
+
+    let reminder = document.createElementNS(svgNS,'rect')
+    reminder.classList.add('reminder-appliance')
+    svg.appendChild(reminder)
+
+    let marker = document.createElementNS(svgNS,'path')
+    svg.appendChild(marker)
+
+
+    svg.setAttribute('x',item.detail.x)
+    svg.setAttribute('y',item.detail.y)
+    svg.id = item.detail.id
+    svg.classList.add('signal')
+    svg.classList.add('exitMarker')
+    svg.classList.add(item.detail.position)
+
+    svg.setAttribute("onclick","javascript:clickSignal('"+item.detail.id+"');")
+    display.appendChild(svg);
+}
+
 function updateSignal(item){
     let signal = document.getElementById(item.id);
     rmClassList=['red','green','yellow','double-yellow','permissive','reminder','flash']
@@ -219,7 +263,7 @@ function updateSignal(item){
 
 function updateTrack(item){
     let track = document.getElementById(item.id);
-    rmClassList=['track-occupied','track-route-set','reminder','switched','display-berth']
+    rmClassList=['track-occupied','track-route-set','reminder','switched','display-berth','flash','engineering-overlay']
     track.classList.remove(...rmClassList);
 
     if(item.berth){
@@ -229,6 +273,9 @@ function updateTrack(item){
         }
     }
 
+    if(!item.pointsDetected){
+        track.classList.add('flash');
+    }
     if(item.pointsPosition===1){
         track.classList.add('switched');
     }
@@ -237,6 +284,9 @@ function updateTrack(item){
     }
     if(item.occupied){
         track.classList.add('track-occupied');
+    }
+    if(item.engineeringOverlay){
+        track.classList.add('engineering-overlay');
     }
 }
 
@@ -256,6 +306,7 @@ let interposeTc=false
 function interposePopup(args){
     let modal = document.getElementById('headcodeInput')
     interposeTc=args.trackId
+    interposeSig=args.sigId
     modal.style.left=args.x+'px'
     modal.style.top=args.y+'px'
     modal.style.display='block'
@@ -271,10 +322,9 @@ function interposeClose(){
 //TODO This interpose function is not working
 function interpose(){
     let headcode = document.getElementById('headcodeInputValue').value
-    ipcRenderer.send('interpose',{headcode,"trackId":interposeTc})
+    ipcRenderer.send('interposeSig',{headcode,"sigId":interposeSig})
     interposeClose()
 }
-
 
 document.getElementById('headcodeInputValue').addEventListener("keyup", function(event) {
     if (event.key === "Enter") {
@@ -286,7 +336,6 @@ document.getElementById('headcodeInputValue').addEventListener("keyup", function
         interposeClose()
     }
 });
-
 
 function updateLog(message){
     let consoleLog = document.getElementById('consoleLog')
@@ -304,3 +353,28 @@ function updateLog(message){
     }
     consoleLog.prepend(li);
 }
+
+function toggleSignalNumbers(){
+    let element = document.getElementById("display");
+    element.classList.toggle("display-signal-ids");
+}
+
+function toggleTrackNumbers(){
+    let element = document.getElementById("display");
+    element.classList.toggle("display-track-ids");
+}
+
+let battonStatus = true;
+let battonb=0;
+function updateBatton(){
+    if(!battonStatus){
+        return false;
+    }
+    const b = ['\\','|','/','-','\\','|','/','-']
+    document.getElementById('batton').innerText=b[battonb]
+    battonb++
+    if(battonb>(b.length-1)){
+        battonb=0
+    }
+}
+setInterval(updateBatton,1000);

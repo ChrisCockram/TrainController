@@ -1,24 +1,32 @@
 const signal = require('./signal.js')
 const track = require('./track.js')
+const ars = require('./ars.js')
+const layoutInterface = require('./interface.js')
 const fs = require('fs')
 const electron = require("electron");
 const {ipcMain} = electron
 
+
 class Railway{
 
     constructor(r) {
-        this.name = 'testRail',
-        this.author = 'testAuthor',
+        this.name = 'testRail'
+        this.author = 'testAuthor'
+        this.detectionEnable = true
         this.layout = {'tracks':[],'signals':[]}
+        this.signalStatusCheck()
+        this.ars=new ars(this)
+        this.interface = new layoutInterface(this,'COM5',115200)
     }
 
     loadFile(path){
         let json = JSON.parse(fs.readFileSync(path))
+        let i=0;
         json.tracks.forEach((t)=>{
-            this.layout.tracks.push(new track(t))
+            this.layout.tracks.push(new track(this,t,this.interface))
         })
         json.signals.forEach((s)=>{
-            this.layout.signals.push(new signal(s))
+            this.layout.signals.push(new signal(this,s))
         })
     }
 
@@ -26,8 +34,20 @@ class Railway{
         return this.layout.signals.find(e=>e.id === id);
     }
 
+    returnSignalWithOverlapAndRouteSet(id){
+        return this.layout.signals.filter(element => {
+            return element.overlap === id && element.routeSet;
+        })[0]
+    }
+
     returnTrackById(id){
         return this.layout.tracks.find(e=>e.id === id);
+    }
+
+    returnTrackByPointsServoAddress(board,id){
+        return this.layout.tracks.filter(element => {
+            return element.pointsServoAddress === id.toString() && element.pointsServoBoard === board.toString();
+        })[0]
     }
 
     flashSignal(id,timeout=false){
@@ -44,103 +64,125 @@ class Railway{
         })
     }
 
-    setRoute(signalId,routeDetails){
-        let sig = this.returnSignalById(signalId)
-        let targetSig = this.returnSignalById(routeDetails.targetSignalId)
+    signalStatusCheck(){
+        setInterval(()=>{
+            this.layout.signals.forEach((sig)=>{
+               if(sig.routeSet) {
+                   //Check TCs are clear and the route is set
+                   let clearSignal=true;
+                   sig.routeSet.required.forEach((tc)=>{
+                       let track = this.returnTrackById(tc.id)
 
-        updateLog('Request to set Route from '+sig.id+' to '+targetSig.id,'action')
+                       if(track.occupied && !tc.flankProtect){
+                           clearSignal=false
+                       }
+                       if(!track.routeSet && !tc.flankProtect){
+                           clearSignal=false
+                       }
+                       if(track.points){
+                           if(track.pointsPosition!=tc.position){
+                               clearSignal=false
+                           }
+                           if(!track.pointsDetected){
+                               clearSignal=false
+                           }
+                       }
+                   })
 
-        if(sig.routeSet){
-            updateLog('There is already a route set from '+sig.id,)
-            return false
-        }
+                   if(!clearSignal){
+                       sig.setAspect(0);
 
-        if(sig.reminder){
-            updateLog('Reminder appliance on '+sig.id)
-            return false
-        }
+                   }else{
+                       let targetSig = this.returnSignalById(sig.routeSet.targetSignalId)
+                       switch(targetSig.status){
+                           case 0:
+                               if (sig.aspects===2){
+                                   sig.setAspect(3)
+                               }else{
+                                   sig.setAspect(1)
+                               }
+                               break
+                           case 1:
+                               if (sig.aspects===2 || sig.aspects===3){
+                                   sig.setAspect(3)
+                               }else{
+                                   sig.setAspect(2)
+                               }
+                               break
+                           case 2:
+                               sig.setAspect(3)
+                               break
+                           case 3:
+                               sig.setAspect(3)
+                               break
+                       }
+                   }
 
-        if(targetSig.reminder){
-            updateLog('Reminder appliance on '+targetSig.id)
-            return false
-        }
+               }
+            });
+        },500)
+    }
 
-        sig.routeSet=routeDetails
+    updateLayoutFromInterface(data){
+        data.tracks.forEach((trk)=>{
+            let tc = this.returnTrackById(trk.track_id)
+            if(tc){
+                if(tc.occupied!=trk.occupied){
+                    tc.occupied=trk.occupied
+                    tc.updateTrack()
 
-        //Check route is available
-        let routeAvailable = true
-        routeDetails.required.forEach((rd)=>{
-            let tc = this.returnTrackById(rd.id)
-
-            if(tc.routeSet){
-                //Is the route set for a flank protected route?
-                if(!rd.flankProtect){
-
-                    //is the route set the overlap of the starting or target signal?
-                    if(tc.id!=sig.overlap && tc.id!=targetSig.overlap){
-                        updateLog('Route already set over track '+tc.id)
-                        routeAvailable=false;
-                    }
-                }
-            }
-            if(tc.points){
-                if(tc.flankProtect){
-                    if(tc.pointsPosition != rd.position){
-                        updateLog('Route requires '+tc.id+' to be switched, but these are locked for flank protection')
-                        routeAvailable=false;
+                    //TODO ADD SPAD DETECTION HERE
+                    //This code advances the headcode
+                    if(tc.occupied){
+                        //Check to see if this is an overlap for a signal
+                        let previousSig = this.returnSignalWithOverlapAndRouteSet(tc.id);
+                        if(previousSig){
+                            let previousBerth = this.returnTrackById(previousSig.berth)
+                            if(previousBerth){
+                                if(previousBerth.occupied){
+                                    let nextSig = this.returnSignalById(previousSig.routeSet.targetSignalId)
+                                    let nextBerth = this.returnTrackById(nextSig.berth)
+                                    if(previousBerth.headcode!=''){
+                                        nextBerth.interpose(previousBerth.headcode)
+                                        previousBerth.interpose('')
+                                        previousBerth.updateTrack()
+                                        nextBerth.updateTrack()
+                                        previousSig.cancelRoute()
+                                    }
+                                }else{
+                                    updateLog('Track '+tc.id+' occupied out of sequence. '+previousSig.berth+' not occupied first','error')
+                                }
+                            }else{
+                                updateLog('Unable to locate track: '+previousSig.berth,'error')
+                            }
+                        }
                     }
                 }
             }
         })
-
-        if(!routeAvailable){
-            updateLog('Route from '+sig.id+' to '+targetSig.id+' not available')
-            sig.routeSet=false
-            return false
-        }
-
-
-        routeDetails.required.forEach((rd)=>{
-            let tc = this.returnTrackById(rd.id)
-            let validPositions = [0,1]
-            if(tc.points){
-                if(validPositions.includes(rd.position)){
-                    tc.setPointPosition(rd.position)
+        data.points.forEach((pts)=>{
+            let tc = this.returnTrackByPointsServoAddress(pts.servo_board,pts.servo_address)
+            if(tc){
+                if(pts.detected_position===pts.position && pts.position === pts.target_position){
+                    tc.pointsDetected=true;
+                    tc.updateTrack();
                 }else{
-                    updateLog('Point position not set correctly','error')
-                    sig.routeSet=false
-                    return false
+                    tc.pointsDetected=false;
+                    tc.updateTrack();
+                }
+
+                //lower pts reference to logic used here
+                pts.position = pts.position -1
+                pts.target_position = pts.target_position - 1
+
+                if(tc.pointsPosition != pts.target_position){
+                    tc.pointsPosition = pts.target_position
+                    tc.updateTrack();
                 }
             }
-            if(rd.flankProtect){
-                tc.flankProtect=true
-            }else{
-                tc.routeSet=true
-            }
-            tc.updateTrack()
         })
     }
 
-    cancelRoute(signalId){
-        let sig = this.returnSignalById(signalId)
-
-        updateLog('Request to cancel route from '+sig.id,'action')
-
-        if(!sig.routeSet){
-            updateLog('No route set from '+signalId)
-            return false
-        }
-        sig.routeSet.required.forEach((rd)=>{
-            let tc = this.returnTrackById(rd.id)
-            if(rd.flankProtect){
-                tc.flankProtect=false
-            }else{
-                tc.routeSet=false
-            }
-            tc.updateTrack()
-        })
-        sig.routeSet=false;
-    }
 }
 
 module.exports = Railway;

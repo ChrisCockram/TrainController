@@ -8,14 +8,53 @@ body{
 .console{
     position: fixed;
     bottom: 0;
-    height: 70px;
-    width: 70%;
-    background-color: #939393;
+    width: 100%;
     font-family: monospace;
     color: #2a2a2a;
     font-weight: bold;
     overflow-y:scroll;
-    font-size: 12px;
+    font-size: 16px;
+}
+.console #consoleLog{
+    width: 50%;
+    background-color: #939393;
+    height: 100px;
+    float: right;
+}
+.console #buttons{
+    width: 50%;
+    float: left;
+    position: fixed;
+    bottom:0;
+}
+
+.console #buttons li{
+    width: 90px;
+    line-height: 30px;
+    font-size: 40px;
+    font-weight: bold;
+    background-color: #FFD279;
+    float: left;
+    text-align: center;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+
+}
+
+.top-bar{
+    height: 30px;
+    font-family: "Gill Sans MT";
+}
+.top-bar .button{
+    cursor: pointer;
+    float: right;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    width: 60px;
 }
 #consoleLog li{
     padding: 3px 3px 0px 3px;
@@ -71,4 +110,11 @@ body{
     display: inline-block;
     font-size: 16px;
     font-weight: bold;
+}
+#batton{
+    font-family: monospace;
+    color: #D9DAC4;
+    height: 30px;
+    width: 30px;
+    font-size: 30px;
 }

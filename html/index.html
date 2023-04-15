@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Train Controller</title>
     <link type="text/css" rel="stylesheet" href="css/default.css">
 </head>
 <body>
-    <svg id="display" class="display-track-ids display-signal-ids" width="200%" height="90vh">
+    <div class="top-bar">
+
+    </div>
+    <svg id="display" class="display-track-ids display-signal-ids" width="300%" height="90vh">
         <style>
             @import url(css/iecc.css);
         </style>
@@ -28,9 +31,14 @@
         <button type="button" onclick="interpose()">Set</button>
         <button type="button">Cancel</button>
     </div>
-
     <div class="console">
+        <div id="batton">|</div>
+
         <ul id="consoleLog">
+        </ul>
+        <ul id="buttons">
+            <li onclick="toggleSignalNumbers()">SGN</li>
+            <li onclick="toggleTrackNumbers()">TCN</li>
         </ul>
     </div>
     <script type="text/javascript" src="js/display-manager.js"></script>
