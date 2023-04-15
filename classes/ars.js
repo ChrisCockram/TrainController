@@ -105,7 +105,10 @@ class Ars{
 
                                 console.log(trip.route[i+j])
                                 routeToSet = nextSignal.returnRouteTo(trip.route[i+j].signal)
-                                nextSignal.setRoute(routeToSet)
+                                if(!nextSignal.setRoute(routeToSet)){
+                                    clearInterval(routeSetLoop)
+                                    return false
+                                }
                             }else{
                                 clearInterval(routeSetLoop)
                                 return false
