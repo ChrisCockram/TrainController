@@ -118,7 +118,7 @@ class Ars{
                             clearInterval(routeSetLoop)
                             return false
                         }
-                    },1500)
+                    },1000)
 
 
                 }

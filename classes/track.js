@@ -87,8 +87,54 @@ class Track{
     setTrackOccupancy(occupied){
         if(occupied!=this.occupied){
             updateLog('Occupancy of track '+this.id+' changed to: '+occupied)
-            this.occupied=occupied;
+            this.occupied=occupied
             this.updateTrack()
+
+            //Move headcode if needed...
+            if(this.occupied){
+                //Check to see if this is an overlap for a signal
+                let previousSig = this.Railway.returnSignalWithOverlapAndRouteSet(this.id)
+                if(previousSig){
+                    let previousBerth = this.Railway.returnTrackById(previousSig.berth)
+                    if(previousBerth){
+                        if(previousBerth.occupied){
+                            //Move Headcode to the next berth
+                            let nextSig = this.Railway.returnSignalById(previousSig.routeSet.targetSignalId)
+                            if(previousBerth.headcode!=''){
+                                nextSig.interpose(previousBerth.headcode)
+                                previousSig.interpose('')
+                            }
+                        }else{
+                            updateLog('Track '+this.id+' occupied out of sequence. '+previousSig.berth+' not occupied first','error')
+                        }
+                    }else{
+                        updateLog('Unable to locate track: '+previousSig.berth,'error')
+                    }
+                }
+            }else{
+                //The TC has cleared
+                let previousSig = this.Railway.returnSignalWithRequiredTcAndRouteSet(this.id)
+                if(previousSig) {
+                    if(previousSig.routeSet){
+                        let clearRoute = true;
+                        let nextSig = this.Railway.returnSignalById(previousSig.routeSet.targetSignalId)
+                        previousSig.routeSet.required.forEach((required)=>{
+                            //is the required tc the next signal overlap
+                            console.log(required.id,nextSig.overlap)
+                            if(required.id != nextSig.overlap){
+                                let tcCheck = this.Railway.returnTrackById(required.id)
+                                console.log(tcCheck.id,tcCheck.occupied)
+                                if(tcCheck.occupied){
+                                    clearRoute = false
+                                }
+                            }
+                        })
+                        if(clearRoute){
+                           previousSig.cancelRoute()
+                        }
+                    }
+                }
+            }
         }
     }
 

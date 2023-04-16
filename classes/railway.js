@@ -40,6 +40,14 @@ class Railway{
         })[0]
     }
 
+    returnSignalWithRequiredTcAndRouteSet(id){
+        return this.layout.signals.filter(element => {
+            if(typeof element.routeSet.required === 'object'){
+                return element.routeSet.required.some(e => e.id === id) && element.routeSet;
+            }
+        })[0]
+    }
+
     returnTrackById(id){
         return this.layout.tracks.find(e=>e.id === id);
     }
@@ -128,35 +136,10 @@ class Railway{
             let tc = this.returnTrackById(trk.track_id)
             if(tc){
                 if(tc.occupied!=trk.occupied){
-                    tc.occupied=trk.occupied
+                    tc.setTrackOccupancy(trk.occupied)
                     tc.updateTrack()
 
                     //TODO ADD SPAD DETECTION HERE
-                    //This code advances the headcode
-                    if(tc.occupied){
-                        //Check to see if this is an overlap for a signal
-                        let previousSig = this.returnSignalWithOverlapAndRouteSet(tc.id);
-                        if(previousSig){
-                            let previousBerth = this.returnTrackById(previousSig.berth)
-                            if(previousBerth){
-                                if(previousBerth.occupied){
-                                    let nextSig = this.returnSignalById(previousSig.routeSet.targetSignalId)
-                                    let nextBerth = this.returnTrackById(nextSig.berth)
-                                    if(previousBerth.headcode!=''){
-                                        nextBerth.interpose(previousBerth.headcode)
-                                        previousBerth.interpose('')
-                                        previousBerth.updateTrack()
-                                        nextBerth.updateTrack()
-                                        previousSig.cancelRoute()
-                                    }
-                                }else{
-                                    updateLog('Track '+tc.id+' occupied out of sequence. '+previousSig.berth+' not occupied first','error')
-                                }
-                            }else{
-                                updateLog('Unable to locate track: '+previousSig.berth,'error')
-                            }
-                        }
-                    }
                 }
             }
         })
